@@ -1,1 +1,8 @@
 <p>dashboard works!</p>
+<button (click)="authStore.logout()">
+    @if (authStore.isLoading()) { 
+        logging out...
+    } @else{
+        Logout
+    }
+</button>
