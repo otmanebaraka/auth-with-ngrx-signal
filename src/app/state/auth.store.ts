@@ -1,4 +1,4 @@
-import { effect, inject } from "@angular/core";
+import { computed, effect, inject } from "@angular/core";
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from "@ngrx/signals";
 import { AuthHttpService } from "../core/services/auth-http.service";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
@@ -11,18 +11,24 @@ export type authState = {
     token: string | null;
     error: string | null;
     isLoading: boolean;
+    isAuthenticated: boolean
 }
 
 const authInitialState: authState = {
     token: null,
     error: null,
-    isLoading: false
+    isLoading: false,
+    isAuthenticated: false
   };
   
 
 export const AuthStore = signalStore(
     { providedIn: 'root' },
     withState(authInitialState),
+    withComputed((store) => ({
+        ...store,
+        isAuthenticated: computed(() => store.token() !== null)
+    })),
     withMethods((store, authHttp = inject(AuthHttpService), authService = inject(AuthService), router = inject(Router))=>({
         login: rxMethod<{email: string, password: string}>(
             pipe(
